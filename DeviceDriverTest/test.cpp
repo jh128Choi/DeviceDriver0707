@@ -49,7 +49,7 @@ TEST_F(DeviceDriverFixture, WriteSuccess) {
 	driver->write(address, data);
 }
 
-TEST_F(DeviceDriverFixture, NoWriteIfValueExist) {
+TEST_F(DeviceDriverFixture, WriteFailException) {
 	unsigned char data = 'B';
 	EXPECT_CALL(flashMock, read(address))
 		.WillOnce(Return('A'));
