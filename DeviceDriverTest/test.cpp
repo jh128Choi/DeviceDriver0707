@@ -40,7 +40,40 @@ TEST_F(DeviceDriverFixture, ReadSuccess) {
 	EXPECT_THAT(driver->read(address), Eq('A'));
 }
 
+TEST(ApplicationTest, WriteAll) {
+	FlashMemoryDeviceMock flashMock;
+	DeviceDriver* driver = new DeviceDriver(&flashMock);
+	Application app(driver);
+
+	for (int i = 0; i < 5; ++i)
+	{
+		EXPECT_CALL(flashMock, write(i, 'C'))
+			.Times(1);
+	}
+
+	app.WriteAll('C');
+}
+
 TEST(ApplicationTest, ReadAndPrint) {
-	EXPECT_EQ(1, 1);
-	EXPECT_TRUE(true);
+	FlashMemoryDeviceMock flashMock;
+	DeviceDriver* driver = new DeviceDriver(&flashMock);
+	Application app(driver);
+
+	EXPECT_CALL(flashMock, read(0))
+		.Times(5)
+		.WillRepeatedly(Return('H'));
+	EXPECT_CALL(flashMock, read(1))
+		.Times(5)
+		.WillRepeatedly(Return('E'));
+	EXPECT_CALL(flashMock, read(2))
+		.Times(5)
+		.WillRepeatedly(Return('L'));
+	EXPECT_CALL(flashMock, read(3))
+		.Times(5)
+		.WillRepeatedly(Return('L'));
+	EXPECT_CALL(flashMock, read(4))
+		.Times(5)
+		.WillRepeatedly(Return('O'));
+
+	app.ReadAndPrint(0, 4);
 }
