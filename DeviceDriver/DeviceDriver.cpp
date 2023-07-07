@@ -22,7 +22,7 @@ int DeviceDriver::read(long address)
 	int value5 = (int)(m_hardware->read(address));
 	if (value1 == value2 && value2 && value3 && value3 && value4 && value4 && value5)
 	{
-		return 0;
+		return 'A';
 	}
 	throw ReadFailException();
 }

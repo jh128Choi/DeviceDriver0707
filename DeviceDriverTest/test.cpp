@@ -26,3 +26,15 @@ TEST(DeviceDriver, ReadFailException) {
 
 	EXPECT_THROW(driver.read(address), ReadFailException);
 }
+
+TEST(DeviceDriver, ReadSuccess) {
+	FlashMemoryDeviceMock flashMock;
+	long address = 0x1000;
+
+	EXPECT_CALL(flashMock, read(address))
+		.WillRepeatedly(Return('A'));
+
+	DeviceDriver driver(&flashMock);
+
+	EXPECT_THAT(driver.read(address), Eq('A'));
+}
