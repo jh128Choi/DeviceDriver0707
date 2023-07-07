@@ -38,3 +38,23 @@ TEST_F(DeviceDriverFixture, ReadSuccess) {
 
 	EXPECT_THAT(driver->read(address), Eq('A'));
 }
+
+TEST_F(DeviceDriverFixture, WriteSuccess) {
+	unsigned char data = 'B';
+	EXPECT_CALL(flashMock, read(address))
+		.WillOnce(Return(0xFF));
+	EXPECT_CALL(flashMock, write(address, data))
+		.Times(1);
+
+	driver->write(address, data);
+}
+
+TEST_F(DeviceDriverFixture, WriteFailException) {
+	unsigned char data = 'B';
+	EXPECT_CALL(flashMock, read(address))
+		.WillOnce(Return('A'));
+	EXPECT_CALL(flashMock, write(address, data))
+		.Times(0);
+
+	EXPECT_THROW(driver->write(address, data), WriteFailException);
+}
