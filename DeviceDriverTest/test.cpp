@@ -41,6 +41,8 @@ TEST_F(DeviceDriverFixture, ReadSuccess) {
 
 TEST_F(DeviceDriverFixture, WriteSuccess) {
 	unsigned char data = 'B';
+	EXPECT_CALL(flashMock, read(address))
+		.WillOnce(Return(0xFF));
 	EXPECT_CALL(flashMock, write(address, data))
 		.Times(1);
 
@@ -50,9 +52,9 @@ TEST_F(DeviceDriverFixture, WriteSuccess) {
 TEST_F(DeviceDriverFixture, NoWriteIfValueExist) {
 	unsigned char data = 'B';
 	EXPECT_CALL(flashMock, read(address))
-		.WillOnce(Return(0xFF));
+		.WillOnce(Return('A'));
 	EXPECT_CALL(flashMock, write(address, data))
 		.Times(0);
 
-	driver->write(address, data);
+	EXPECT_THROW(driver->write(address, data), WriteFailException);
 }
