@@ -40,25 +40,30 @@ TEST_F(DeviceDriverFixture, ReadSuccess) {
 	EXPECT_THAT(driver->read(address), Eq('A'));
 }
 
-TEST(ApplicationTest, WriteAll) {
+class ApplicationFixture : public testing::Test
+{
+public:
+	ApplicationFixture()
+	{
+		driver = new DeviceDriver(&flashMock);
+		app = new Application(driver);
+	}
 	FlashMemoryDeviceMock flashMock;
-	DeviceDriver* driver = new DeviceDriver(&flashMock);
-	Application app(driver);
+	DeviceDriver* driver;
+	Application* app;
+};
 
+TEST_F(ApplicationFixture, WriteAll) {
 	for (int i = 0; i < 5; ++i)
 	{
 		EXPECT_CALL(flashMock, write(i, 'C'))
 			.Times(1);
 	}
 
-	app.WriteAll('C');
+	app->WriteAll('C');
 }
 
-TEST(ApplicationTest, ReadAndPrint) {
-	FlashMemoryDeviceMock flashMock;
-	DeviceDriver* driver = new DeviceDriver(&flashMock);
-	Application app(driver);
-
+TEST_F(ApplicationFixture, ReadAndPrint) {
 	EXPECT_CALL(flashMock, read(0))
 		.Times(5)
 		.WillRepeatedly(Return('H'));
@@ -75,5 +80,5 @@ TEST(ApplicationTest, ReadAndPrint) {
 		.Times(5)
 		.WillRepeatedly(Return('O'));
 
-	app.ReadAndPrint(0, 4);
+	app->ReadAndPrint(0, 4);
 }
